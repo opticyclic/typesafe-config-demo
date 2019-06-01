@@ -2,11 +2,6 @@ package com.github.opticyclic.typesafe;
 
 import java.io.File;
 import java.nio.file.Paths;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiFunction;
-import java.util.function.Supplier;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -22,40 +17,6 @@ public class Configs {
 
   public static Configs.Builder builder() {
     return new Builder();
-  }
-
-  // Always start with a blank config and add fallbacks
-  private static final AtomicReference<Config> propertiesRef = new AtomicReference<>(null);
-
-  public static void initProperties(Config config) {
-    boolean success = propertiesRef.compareAndSet(null, config);
-    if(!success) {
-      throw new RuntimeException("propertiesRef Config has already been initialized. This should only be called once.");
-    }
-  }
-
-  public static Config properties() {
-    return propertiesRef.get();
-  }
-
-  public static <T> T getOrDefault(Config config, String path, BiFunction<Config, String, T> extractor, T defaultValue) {
-    if(config.hasPath(path)) {
-      return extractor.apply(config, path);
-    }
-    return defaultValue;
-  }
-
-  public static <T> T getOrDefault(Config config, String path, BiFunction<Config, String, T> extractor, Supplier<T> defaultSupplier) {
-    if(config.hasPath(path)) {
-      return extractor.apply(config, path);
-    }
-    return defaultSupplier.get();
-  }
-
-  public static Map<String, Object> asMap(Config config) {
-    Map<String, Object> map = new ConcurrentHashMap<>();
-    config.entrySet().forEach(e -> map.put(e.getKey(), e.getValue()));
-    return map;
   }
 
   public static class Builder {
