@@ -1,6 +1,7 @@
 package com.github.opticyclic.typesafe;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
@@ -88,7 +89,7 @@ public class Configs {
         log.info("Loaded config file from path ({})", path);
         conf = conf.withFallback(ConfigFactory.parseFile(secureConfFile));
       } else {
-        log.info("Attempted to load file from path ({}) but it was not found", path);
+        log.info("Attempted to load file from path ({}) but it was not found. Working directory is ({})", path, Paths.get(".").toAbsolutePath().normalize().toString());
       }
       return this;
     }
