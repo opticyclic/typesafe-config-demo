@@ -24,12 +24,6 @@ public class Configs {
     return new Builder();
   }
 
-  // This config has access to all of the environment variables
-  private static final Config systemEnvironment = ConfigFactory.systemEnvironment();
-
-  // This config has all of the JVM system properties including any custom -D properties
-  private static final Config systemProperties = ConfigFactory.systemProperties();
-
   // Always start with a blank config and add fallbacks
   private static final AtomicReference<Config> propertiesRef = new AtomicReference<>(null);
 
@@ -71,14 +65,25 @@ public class Configs {
       log.info("Loading configs first row is highest priority, second row is fallback and so on");
     }
 
+    /**
+     * This config has access to all of the environment variables
+     *
+     * @see ConfigFactory#systemEnvironment()
+     */
     public Builder withSystemEnvironment() {
-      conf = conf.withFallback(systemEnvironment);
+      conf = conf.withFallback(ConfigFactory.systemEnvironment());
       log.info("Loaded system environment into config");
       return this;
     }
 
+    /**
+     * This config has all of the JVM system properties including any custom -D properties.
+     * System Properties are cached on first use
+     *
+     * @see ConfigFactory#systemProperties()
+     */
     public Builder withSystemProperties() {
-      conf = conf.withFallback(systemProperties);
+      conf = conf.withFallback(ConfigFactory.systemProperties());
       log.info("Loaded system properties into config");
       return this;
     }
