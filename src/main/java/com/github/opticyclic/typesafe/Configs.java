@@ -19,11 +19,15 @@ public class Configs {
     //no-op private constructor to force use of Builder pattern
   }
 
-  // This config has all of the JVM system properties including any custom -D properties
-  private static final Config systemProperties = ConfigFactory.systemProperties();
+  public static Configs.Builder newBuilder() {
+    return new Builder();
+  }
 
   // This config has access to all of the environment variables
   private static final Config systemEnvironment = ConfigFactory.systemEnvironment();
+
+  // This config has all of the JVM system properties including any custom -D properties
+  private static final Config systemProperties = ConfigFactory.systemProperties();
 
   // Always start with a blank config and add fallbacks
   private static final AtomicReference<Config> propertiesRef = new AtomicReference<>(null);
@@ -37,18 +41,6 @@ public class Configs {
 
   public static Config properties() {
     return propertiesRef.get();
-  }
-
-  public static Config systemProperties() {
-    return systemProperties;
-  }
-
-  public static Config systemEnvironment() {
-    return systemEnvironment;
-  }
-
-  public static Configs.Builder newBuilder() {
-    return new Builder();
   }
 
   public static <T> T getOrDefault(Config config, String path, BiFunction<Config, String, T> extractor, T defaultValue) {
@@ -78,23 +70,15 @@ public class Configs {
       log.info("Loading configs first row is highest priority, second row is fallback and so on");
     }
 
-    public Builder withResource(String resource) {
-      Config resourceConfig = ConfigFactory.parseResources(resource);
-      String empty = resourceConfig.entrySet().size() == 0 ? " contains no values" : "";
-      conf = conf.withFallback(resourceConfig);
-      log.info("Loaded config file from resource ({}){}", resource, empty);
+    public Builder withSystemEnvironment() {
+      conf = conf.withFallback(systemEnvironment);
+      log.info("Loaded system environment into config");
       return this;
     }
 
     public Builder withSystemProperties() {
       conf = conf.withFallback(systemProperties);
       log.info("Loaded system properties into config");
-      return this;
-    }
-
-    public Builder withSystemEnvironment() {
-      conf = conf.withFallback(systemEnvironment);
-      log.info("Loaded system environment into config");
       return this;
     }
 
@@ -116,6 +100,14 @@ public class Configs {
     private String getUserDirectory() {
       File homeDir = new File(System.getProperty("user.home"));
       return homeDir.getAbsolutePath();
+    }
+
+    public Builder withResource(String resource) {
+      Config resourceConfig = ConfigFactory.parseResources(resource);
+      String empty = resourceConfig.entrySet().size() == 0 ? " contains no values" : "";
+      conf = conf.withFallback(resourceConfig);
+      log.info("Loaded config file from resource ({}){}", resource, empty);
+      return this;
     }
 
     public Builder withConfig(Config config) {
