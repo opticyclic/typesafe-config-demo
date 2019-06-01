@@ -9,22 +9,15 @@ import java.util.function.Supplier;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import com.typesafe.config.ConfigRenderOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// {{start:config}}
 public class Configs {
   private static final Logger log = LoggerFactory.getLogger(Configs.class);
 
   private Configs() {
+    //no-op private constructor to force use of Builder pattern
   }
-
-  /*
-   * I am letting the typesafe configs bleed out on purpose here.
-   * We could abstract out and delegate but its not worth it.
-   * I am gambling on the fact that I will not switch out the config library.
-   */
 
   // This config has all of the JVM system properties including any custom -D properties
   private static final Config systemProperties = ConfigFactory.systemProperties();
@@ -140,11 +133,4 @@ public class Configs {
       return conf;
     }
   }
-
-  public static void main(String[] args) {
-    log.debug(ConfigFactory.load().root().render(ConfigRenderOptions.concise()));
-
-    //newBuilder().withSystemEnvironment().withSystemProperties().build();
-  }
 }
-// {{end:config}}
