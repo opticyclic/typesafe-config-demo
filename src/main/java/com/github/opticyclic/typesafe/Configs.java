@@ -51,11 +51,6 @@ public class Configs {
     return new Builder();
   }
 
-  // This should return the current executing user path
-  public static String getExecutionDirectory() {
-    return systemProperties.getString("user.dir");
-  }
-
   public static <T> T getOrDefault(Config config, String path, BiFunction<Config, String, T> extractor, T defaultValue) {
     if(config.hasPath(path)) {
       return extractor.apply(config, path);
@@ -114,8 +109,13 @@ public class Configs {
       return this;
     }
 
-    public Builder withOptionalRelativeFile(String path) {
-      return withOptionalFile(getExecutionDirectory() + path);
+    public Builder withOptionalHomeDirFile(String path) {
+      return withOptionalFile(getUserDirectory() + path);
+    }
+
+    private String getUserDirectory() {
+      File homeDir = new File(System.getProperty("user.home"));
+      return homeDir.getAbsolutePath();
     }
 
     public Builder withConfig(Config config) {
