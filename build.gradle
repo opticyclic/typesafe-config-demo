@@ -1,0 +1,31 @@
+buildscript {
+    ext {
+        typesafe_version = '1.3.4'
+        slf4j_version = '1.7.12'
+        logback_version = '1.1.3'
+        testng_version = '6.14.3'
+    }
+    repositories {
+        mavenCentral()
+    }
+}
+
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+}
+
+wrapper {
+    distributionType = Wrapper.DistributionType.ALL
+}
+
+dependencies {
+    compile "com.typesafe:config:$typesafe_version"
+    compile "org.slf4j:slf4j-api:$slf4j_version"
+
+    runtime "ch.qos.logback:logback-classic:$logback_version"
+
+    // Test dependencies
+    testCompile "org.testng:testng:$testng_version"
+}
