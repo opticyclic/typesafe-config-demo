@@ -2,6 +2,7 @@ package com.github.opticyclic.typesafe;
 
 import java.io.File;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
@@ -9,7 +10,6 @@ import java.util.function.Supplier;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigRenderOptions;
-import org.jooq.lambda.Seq;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,8 +78,9 @@ public class Configs {
   }
 
   public static Map<String, Object> asMap(Config config) {
-    return Seq.seq(config.entrySet())
-             .toMap(e -> e.getKey(), e -> e.getValue().unwrapped());
+    Map<String, Object> map = new ConcurrentHashMap<>();
+    config.entrySet().forEach(e -> map.put(e.getKey(), e.getValue()));
+    return map;
   }
 
   public static class Builder {
